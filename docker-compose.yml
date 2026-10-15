@@ -1,0 +1,38 @@
+services:
+  rebar-watch:
+    build:
+      context: .
+    container_name: rebar-watch
+    restart: unless-stopped
+    command: ["python", "-u", "main.py"]
+    environment:
+      TZ: Asia/Tehran
+      DATA_DIR: /app/data
+      OUTPUT_DIR: /app/output
+      DATABASE_PATH: /app/data/rebar_observatory.sqlite3
+      COLLECTION_INTERVAL_HOURS: ${COLLECTION_INTERVAL_HOURS:-24}
+      HTTP_TIMEOUT_SECONDS: ${HTTP_TIMEOUT_SECONDS:-25}
+      AHANTIME_URL: ${AHANTIME_URL:-https://ahantime.com/prices/rebar/deformed/rebar-14-a3-zobahan}
+      FOOLADSELL_URL: ${FOOLADSELL_URL:-https://fooladsell.com/product/%D9%85%DB%8C%D9%84%DA%AF%D8%B1%D8%AF-%D8%A2%D8%AC%D8%AF%D8%A7%D8%B1-%D8%B0%D9%88%D8%A8-%D8%A2%D9%87%D9%86-%D8%A7%D8%B5%D9%81%D9%87%D8%A7%D9%86-a3-%D8%B3%D8%A7%DB%8C%D8%B2-14/}
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+
+  dashboard:
+    build:
+      context: .
+    container_name: rebar-dashboard
+    restart: unless-stopped
+    command: ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
+    environment:
+      TZ: Asia/Tehran
+      DATA_DIR: /app/data
+      OUTPUT_DIR: /app/output
+      DATABASE_PATH: /app/data/rebar_observatory.sqlite3
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./output:/app/output
+    depends_on:
+      - rebar-watch

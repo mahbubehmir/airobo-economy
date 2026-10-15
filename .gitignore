@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+data/*.sqlite3
+data/*.db
+output/*.csv
+output/*.md
+!output/.gitkeep
+.pytest_cache/
+.DS_Store
+dashboard_storage.before_connection_close.py
